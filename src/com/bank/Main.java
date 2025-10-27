@@ -9,9 +9,7 @@ class Bank_locker{
 
 }
 class Bank_accounts{
-    private
-    String Name ;
-    int id ;
+
 //    long accountNumber;
 // JDBC Connection Details
     private static final String URL = "jdbc:mysql://localhost:3306/Bank";
@@ -60,7 +58,40 @@ class Bank_accounts{
             input.close();
 
     }
+    void ViewAccount() {
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Enter account holder name to search: ");
+        String name = input.nextLine();
+
+        // Database logic
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            String sql = "SELECT * FROM AccountInfo WHERE name = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                System.out.println("\n✅ Account Details Found:");
+                System.out.println("----------------------------");
+//                System.out.println("Account ID: " + resultSet.getInt("id"));
+                System.out.println("Name: " + resultSet.getString("name"));
+                System.out.println("Balance: ₹" + resultSet.getDouble("balance"));
+                System.out.println("Email: " + resultSet.getString("email"));
+                System.out.println("Phone: " + resultSet.getString("phone"));
+                System.out.println("----------------------------\n");
+            } else {
+                System.out.println("⚠️ No account found with name: " + name);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
+
 class CurrencySupport{
 
 }
@@ -68,6 +99,20 @@ class CurrencySupport{
 public class Main {
     public static void main(String[] args) {
         Bank_accounts BC = new Bank_accounts();
-        BC.OpenAccount();
+        Scanner MainInput = new Scanner(System.in);
+        System.out.println("Welcome to the bank");
+        System.out.println("1 for opening account\n2 for View account info.");
+        System.out.print("Enter Your Choice : ");
+
+        int Choice = MainInput.nextInt();
+
+        switch (Choice){
+            case 1:
+                BC.OpenAccount();
+            case 2:
+                BC.ViewAccount();
+        }
+
+
     }
 }
